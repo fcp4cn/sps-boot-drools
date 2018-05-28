@@ -1,0 +1,41 @@
+CREATE DATABASE `test` DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+USE `test`;
+
+DROP TABLE IF EXISTS `sps_demo`;
+
+CREATE TABLE `sps_demo` (
+  `hello` varchar(15) NOT NULL ,
+  `world` int(11) NOT NULL ,
+  `greeting` datetime(3),
+  PRIMARY KEY (`hello`)
+) ENGINE=InnoDB COMMENT='SPS Demo';
+
+
+INSERT INTO `sps_demo` VALUES ('SPS', '1',  '2018-05-28 08:08:08');
+
+/*
+SPS1 only one sql 
+*/
+select * from sps_demo;
+
+
+/*
+SPS2  two sql 
+*/
+update sps_demo set world = world + 10 , greeting = now() where hello = 'SPS';
+select * from sps_demo;
+
+/*
+http://localhost:8080/test
+
+exec SPS1 and SPS2, total 3 sql
+
+demo how to sp call sp
+*/
+
+/*
+http://localhost:8080/test2
+
+exec SPS2, with 2 sql
+*/

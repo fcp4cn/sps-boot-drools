@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kmodule xmlns="http://jboss.org/kie/6.0.0/kmodule"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+    <kbase name="kbase1" packages="rules.sps1">
+    	<ksession name="mockupSP1Session" />
+    </kbase>
+
+    <kbase name="kbase2" packages="rules.sps2">
+    	<ksession name="mockupSP2Session" />
+    </kbase>
+  
+</kmodule>

@@ -1,0 +1,108 @@
+package rules.sps2
+
+import java.sql.Timestamp;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
+import java.lang.System;
+import org.slf4j.Logger;
+
+import sps.SPSutil;
+import sps.SPSfact;
+
+//Define java BO locally
+declare SPSdemo  
+	hello : String 
+	world : Integer 
+	greeting : Timestamp 
+end
+
+//Map function list
+function void check(SPSfact f) {
+	System.out.println(" ^^^^ Passed the Validate rule");	
+}
+
+function void testSP(SPSfact f) {
+	List<SPSdemo> r = new ArrayList<SPSdemo>();
+	String sql = "update sps_demo set world = world + 10 , greeting = now() where hello = 'SPS' \n"
+				+ "select * from sps_demo; \n";
+	SPSutil.getLog().info(" ^^^^ \n" + sql);
+	Connection con = null;
+	try {
+		con = SPSutil.getConnection(); 
+		Statement stmt = con.createStatement(); 
+		stmt.executeUpdate("update sps_demo set world = world + 10 , greeting = now() where hello = 'SPS' ");
+		ResultSet rs = stmt.executeQuery("select * from sps_demo ");
+		if (rs != null) {
+
+			while (rs.next()) {
+				SPSdemo bo = new SPSdemo();
+
+				bo.setHello(rs.getString("hello"));
+				bo.setWorld(rs.getInt("world"));
+				bo.setGreeting(rs.getTimestamp("greeting"));
+
+				r.add(bo);
+			}
+		}
+		f.setStatus(0);
+	} catch (Exception e) {
+		f.setStatus(-1);
+		f.setMessage(e.getMessage());
+		e.printStackTrace();
+	}
+	SPSutil.close(con);
+
+	f.getMapData().put("out", r);
+}    
+
+
+function void reduce(SPSfact f){
+	if (f.getStatus()!=0) return; 
+	List<SPSdemo> r = (List<SPSdemo>) (f.getMapData().get("out"));
+	if (r==null || r.size()==0) {
+		f.setMessage("Got Nothing!!");
+		return;
+	} else {
+		f.setMessage("Done!!");
+	}		
+	
+	//clear map data for reduce
+	f.getReduceOut().put("sps2", f.getMapData().get("out"));
+	f.getMapData().clear();
+}
+
+//apply MapReduce to flow control
+
+rule "Map to validate ARGs"
+	salience 1000
+	no-loop true
+	when
+		f:SPSfact()
+	then
+		check(f);
+end
+
+rule "Map to call SPS" 
+   	salience 100
+   	no-loop true
+   	when
+   		f:SPSfact(status==0)
+   	then
+		testSP(f);
+		System.out.println(" ^^^^ Passed the Map rule");
+end
+
+//last rule 
+rule "Reduce to out"  
+   	salience 0
+   	no-loop true
+   	when
+		f:SPSfact()
+   	then
+   		reduce(f);
+		System.out.println(" ^^^^ Passed the Reduce rule");
+end
+

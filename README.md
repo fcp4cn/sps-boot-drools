@@ -11,4 +11,11 @@ The project are our solution , key stack:
 3. MapReduce - apply to biz data flow
 
 
-##### (source codes coming soon!:)
+##### (source codes checked in on 2018-05-28)
+#### The demo base MySQL, read mysql.txt firstly. 
+
+== See Also
+
+The following guides may also be helpful:
+
+* https://github.com/spring-guides/gs-spring-boot[Spring Boot]
