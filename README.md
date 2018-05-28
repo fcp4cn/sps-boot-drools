@@ -18,4 +18,4 @@ The project are our solution , key stack:
 
 The following guides may also be helpful:
 
-* https://github.com/spring-guides/gs-spring-boot[Spring Boot]
+* https://github.com/spring-guides/gs-spring-boot [Spring Boot]
