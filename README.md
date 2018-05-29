@@ -11,8 +11,9 @@ The project are our solution , key stack:
 3. MapReduce - apply to biz data flow
 
 
-##### (source codes checked in on 2018-05-28)
 #### The demo base MySQL, read mysql.txt firstly. 
+* Drools can also run as war or jar, when you do not want setup micro service.
+* Drools support hot deployment, same as SP. 
 
 == See Also
 

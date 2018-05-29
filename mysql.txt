@@ -1,3 +1,4 @@
+-- MySQL schema --------------------
 CREATE DATABASE `test` DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 USE `test`;
@@ -14,28 +15,61 @@ CREATE TABLE `sps_demo` (
 
 INSERT INTO `sps_demo` VALUES ('SPS', '1',  '2018-05-28 08:08:08');
 
-/*
-SPS1 only one sql 
-*/
-select * from sps_demo;
+-- end --------------------------------------
+-- pls update file for jdbc connection - src/main/resources/application.properties
+
+-- ---------------------------------------------------
+-- MySQL    SP : sp_test_1 
+--
+-- Drools Rule : src/main/resources/rules/sps1/sp_mockup1.drl , implement the SP logic
+--
+-- Service URL : http://localhost:8080/test
+-- ---------------------------------------------------
+drop procedure 
+IF EXISTS sp_test_1;
+
+DELIMITER $$
+CREATE PROCEDURE sp_test_1()
+BEGIN
+
+	SELECT * FROM sps_demo;
+
+	CALL sp_test_2();
+	
+END$$
+DELIMITER ;  
+-- CALL sp_test_1();
 
 
-/*
-SPS2  two sql 
-*/
-update sps_demo set world = world + 10 , greeting = now() where hello = 'SPS';
-select * from sps_demo;
+-- ---------------------------------------------------
+-- MySQL    SP : sp_test_2 
+--
+-- Drools Rule : src/main/resources/rules/sps2/sp_mockup2.drl , implement the SP logic
+--
+-- Service URL : http://localhost:8080/test2
+-- ---------------------------------------------------
+drop procedure 
+IF EXISTS sp_test_2;
 
-/*
-http://localhost:8080/test
+DELIMITER $$
+CREATE PROCEDURE sp_test_2()
+BEGIN
 
-exec SPS1 and SPS2, total 3 sql
+	update sps_demo set world = world + 10 , greeting = now() where hello = 'SPS';
+	
+	select * from sps_demo;
 
-demo how to sp call sp
-*/
+END$$
+DELIMITER ;  
+-- CALL sp_test_2();
 
-/*
-http://localhost:8080/test2
 
-exec SPS2, with 2 sql
-*/
+-- ---------------------------------------------------
+-- How to implement a SP logic 
+-- 
+-- a SP mapping to a Drools file 
+--
+-- Break the SP SQL , then put into the Drools Rule file
+--
+-- Define Service URL for caller 
+-- ---------------------------------------------------
